@@ -1,0 +1,1 @@
+((gets.to_i) % 2 == 0) ? (puts 'White'):(puts 'Black')

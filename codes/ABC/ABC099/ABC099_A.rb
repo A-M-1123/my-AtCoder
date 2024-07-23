@@ -1,0 +1,1 @@
+gets.to_i < 1000 ? (puts "ABC"):(puts "ABD")
