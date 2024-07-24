@@ -1,50 +1,52 @@
-n,m = gets.split.map(&:to_i)
+T=true; F=false; INF=9999999999999 # 10**13-1
+def makeNds(n,m,a,if1way,ifWgt,ifLbl,ifTer);nds=Array.new(n+1).map{Array.new(0)};i=0;while i<m;id1,id2=a[i][0],a[i][1];w=a[i][2]if ifWgt;if !ifWgt && !ifLbl;nds[id1].push(id2);nds[id2].push(id1)if !if1way;else;ed=[id2];ed.push(w)if ifWgt;ed.push(i+1)if ifLbl;nds[id1].push(ed);if !if1way;ed=[id1];ed.push(w)if ifWgt;ed.push(i+1)if ifLbl;nds[id2].push(ed);end;end;i+=1;end;n.times{|i|nds[i+1].push(nil)}if if1way || !ifTer;return nds;end
+def getDigitLen(n);n=n.abs;return 1 if n==0;return Math.log10(n).to_i+1;end; def getNumApart(n);d=[];begin;d.unshift(n%10);n/=10;end while n>0;return d;end
+def to1d(y,x,w); return y*w+x; end;  def to2d(n,w); return (n / w),(n % w); end
+def nC2(n); return 0 if n<2; return n*(n-1)/2; end;  def sumStep(n); return 0 if n<1; return n*(n+1)/2; end;  def count0011(w,i); blc = n/(w << 1); ret = blc*w; n -= blc*(w << 1)+w-1; ret+=n if 0<n; return ret; end
+def sort2darr(a);a.sort!{|x,y|(x[0]<=>y[0]).nonzero?||x[1]<=>y[1]};end
+def copyArr(a);return Marshal.load(Marshal.dump(a));end
+def pTF(bool,strT,strF);(bool)?(puts strT):(puts strF);end; def pYN(bool);pTF(bool,"Yes","No");end
+def p2darr(arr,part);arr.each{|ae| puts ae.join(part)};end
+def gInt();gets.to_i;end; def gInts();gets.split.map(&:to_i);end; def gIntMat(n);n.times.map{gInts()};end; def gIntVars(n);gIntMat(n).transpose;end
+def gStrs();gets.chomp.split;end; def gCharsDiv();gets.chomp.split("");end; def gCharMat(n);n.times.map{gets.chomp.split("")};end; def gStrsVert(n);n.times.map{gets.chomp};end
+# makeNds(ndN,edgeN,edgeArr,1way?,wgt?,lbl?,spanning?) <ex.makeNds(n,m,a,F,F,F,T)>
+# getDigitLen(num) # getNumApart(num) <ex.4275=>[4,2,7,5]>
+# to1d(y,x,w) to2d(n,w) <w = width>
+# nCn(n) # sumStep(n) <sum(1..n)> # count0011(w,i) <0-index>
+# sort2darr(array) <for 2*2-array>
+# copyArr(array)
+# p...TF(bool,strT,strF) YN(bool) 2darr(arr,partition)
+# g...Int Ints IntMat(n) IntVars(n)
+# g...Strs CharsDiv CharMat(n) StrsVert(n)
+
+# class Union-Find / .new(size):0-index => .new(size,1):1-index 
+class UnionFind
+    def initialize(size,*args); (!args.empty? && 0<args[0])?(@idx=1):(@idx=0); @size=size; @root=(0..(size-1+@idx)).to_a; @rank=Array.new(size+@idx,0); @isRoot=Array.new(size+@idx,true); @path=[]; end  
+    def unite(id1, id2); rt1,rt2=findRoot(id1),findRoot(id2); return if rt1==rt2; if @rank[rt1]>=@rank[rt2]; @root[rt2]=rt1; @isRoot[id2]=false; @rank[rt2]+=1 if @rank[rt1]==@rank[rt2]; else; @root[rt1]=rt2; @isRoot[id1]=false; end; end
+    def isSame(id1, id2); return findRoot(id1)==findRoot(id2); end
+    def getRoot(); updateAll(); (@idx == 0)?(return @root):(return @root[1..@size]); end
+    def getGroup(); updateAll(); hs={}; i=@idx-1; while (i += 1)<@size+@idx; hs[@root[i]]||=Array.new(0); hs[@root[i]].push(i); end; ret=[]; hs.each do |k,v|; ret.push(v); end; return ret; end
+    
+    def findRoot(id); while @root[id]!=id; @path.push(id) if !@isRoot[@root[id]]; id=@root[id]; @isRoot[id]=false; end; while (pt=@path.pop); @root[pt]=id; end; return id; end
+    def updateAll(); i=@idx-1; while (i+=1)<@size+@idx; findRoot(i) if !@isRoot[@root[i]]; end; end
+end
+
+n,m = gInts
 if m == 0
   puts 1
   exit
 end
-a,b = m.times.map{gets.split.map(&:to_i)}.transpose
+ab = gIntMat(m)
 
-nds = Array.new(n+1).map{Array.new(0)}
-for i in 0..(m-1)
-  nds[a[i]].push(b[i])
-  nds[b[i]].push(a[i])
-end
-for i in 1..n
-  nds[i].push(-1)
-end
-for i in 1..n
-  nds[i].uniq!
+uf = UnionFind.new(n,1)
+i = -1
+while (i += 1) < m
+  a,b = ab[i]
+  uf.unite(a,b)
 end
 
-ckd = Array.new(n+1,0)
-lsin = Array.new(n+1,0)
-ans = 0
-cntn = 1
-stid = 1
-while cntn == 1
-  ls = Array.new(0)
-  ls.push(stid)
-  lsln = 1
-  lsin[stid] = 1
-  for i in 0..(lsln-1)
-    ckd[ls[i]] = 1
-    nds[ls[i]].each do |ch|
-      if ch != -1 && lsin[ch] == 0
-        ls.push(ch)
-        lsln += 1
-        lsin[ch] = 1
-      end
-    end
-  end
-  ans = [ans,lsln].max
-  
-  stid += 1
-  while stid < n && ckd[stid] == 1
-    stid += 1
-  end
-  if stid >= n
-    cntn = 0
-  end
+ans = 1
+uf.getGroup.each do |gp|
+  ans = [ans,gp.length].max
 end
 puts ans
