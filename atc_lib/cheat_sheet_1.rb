@@ -1,6 +1,6 @@
 ### 二次元配列 ###
 # turn2darr(array,dir,angle) ... dir=[:x,:y,:l,:r], angle = 90n // 配列の回転 x,y=回転軸 l,r=中心軸angle度
-def turn2darr(a,d,ang);d=d.downcase;return a.reverse if d==:x;return a.map(&:reverse) if d==:y;ang%=360;return nil if ang%90!=0;return a if ang==0;return turn2DArray(a,:l,90) if d==:r&&ang==270;return turn2DArray(a,:r,90) if d==:l&&ang==270;if ang==180;return a.reverse.map(&:reverse);elsif d==:r;return a.transpose.map(&:reverse);elsif d==:l;return a.transpose.reverse;end;return nil;end
+def turn2darr(a,d,ang);d=d.downcase;return a.reverse if d==:x;return a.map(&:reverse) if d==:y;ang%=360;return nil if ang%90!=0;return a if ang==0;return turn2darr(a,:l,90) if d==:r&&ang==270;return turn2darr(a,:r,90) if d==:l&&ang==270;if ang==180;return a.reverse.map(&:reverse);elsif d==:r;return a.transpose.map(&:reverse);elsif d==:l;return a.transpose.reverse;end;return nil;end
 # addMargin2darr(arr,char) // 配列arrの周囲にcharを追加
 def addMargin2darr(a,c);h=a.length;w=a[0].length;i=0;while i<h;a[i].unshift(c);a[i].push(c);i+=1;end;a.unshift(Array.new(w+2,c));a.push(Array.new(w+2,c));return a;end
 # trimPos2darr(arr,mark) trim2DArray(arr,pos):pos...2*2-Array // markを全て含むように最大限配列をトリミング
