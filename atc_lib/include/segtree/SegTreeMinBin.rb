@@ -65,12 +65,12 @@ class SegTreeMin
     end
 
     def getPoint(id)
-        return nil if id <= 0 || @arrLen < id
+        return nil if id < 0 || @arrLen <= id
         return @tree[@trBtmStID+id]
     end
     
     def updateCalc(id,v)
-        return false if id <= 0 || @arrLen < id
+        return false if id < 0 || @arrLen <= id
         id += @trBtmStID
         preV = @tree[id]
         newV = calculate(preV,v)
@@ -79,7 +79,7 @@ class SegTreeMin
         updateSub(calcParentID(id))
     end
     def updateOW(id,v)
-        return false if id <= 0 || @arrLen < id
+        return false if id < 0 || @arrLen <= id
         id += @trBtmStID
         @tree[id] = v
         updateSub(calcParentID(id))
